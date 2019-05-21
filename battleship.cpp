@@ -22,9 +22,8 @@ void gen()//generates computer positions
 	srand(time(NULL));
 	for (int z = 0; z < num_ships; z++)//num_ships comes from somewhere else
 	{
-		
-		y = rand() % 9;
-		x = rand() % 9;
+		y = rand() % 8;
+		x = rand() % 8;
 		if (comp[x][y] != 1)
 		{
 			comp[x][y] = 1;//1 is with a ship in this case
@@ -218,8 +217,8 @@ void bombs_gen()
 	srand(time(NULL));
 	for (int z = 0; z < 1; z++)//num_ships comes from somewhere else
 	{
-		y = rand() % 9;
-		x = rand() % 9;
+		y = rand() % 8;5
+		x = rand() % 8;
 		if (player[x][y] == 0)
 		{
 			player[x][y] = 2;
@@ -260,11 +259,8 @@ int main()
 		{
 			game_end = 1;
 		}
-		
 		turns++;
 	}
-
-
 	cout << "It took " << turns << " turns" << endl;
 	system("pause");
 	return 0;
