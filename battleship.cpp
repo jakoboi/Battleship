@@ -2,6 +2,7 @@
 //Battleship project
 
 #include<iostream>//io
+#include<Windows.h>//for sleep
 #include<ctime>//time
 #include<cstdlib>//various things
 #include<string>//string
@@ -217,12 +218,12 @@ void bombs_gen()
 	srand(time(NULL));
 	for (int z = 0; z < 1; z++)//num_ships comes from somewhere else
 	{
-		y = rand() % 8;5
+		y = rand() % 8;
 		x = rand() % 8;
 		if (player[x][y] == 0)
 		{
 			player[x][y] = 2;
-			cout << "Dang!" << endl;
+			cout << "Dang! I missed!" << endl;
 			//u missed
 		}
 		else if (comp[x][y] == 1)
@@ -246,22 +247,24 @@ int main()
 	gen();//created computer positions
 	user_input();//inputs ships
 	grid_cout();//couts it
-	while(game_end == 0)
+	do
 	{
 		cout << "You are playing with " << num_ships << " ships." << endl;
 		user_bomb();
-		grid_cout();
+		Sleep(1000);
 		bombs_gen();
+		Sleep(1000);
 		grid_cout();
+		++turns;
 		//using loops find comp ships, user ships
 		if (user_ships == 0 || comp_ships == 0)//these are inserted into the other functions, 
 		//i figured this would be easier and more efficient to do than another seperate function
 		{
 			game_end = 1;
 		}
-		turns++;
-	}
+	} while (game_end == 0);
+	grid_cout();
 	cout << "It took " << turns << " turns" << endl;
-	system("pause");
+	cin.ignore();
 	return 0;
 }
