@@ -1,16 +1,21 @@
 //Jakob Zhang
 //Battleship project
 
-#include<iostream>
-#include<ctime>
-#include<cstdlib>
-#include<string>
+#include<iostream>//io
+#include<ctime>//time
+#include<cstdlib>//various things
+#include<string>//string
+
 using namespace std;
-int player[8][8], comp[8][8];
-int num_ships;
-int w, x, y, z;//these change often, are just placeholders
-string a;
-//make so 0=clear, 1=boat, 2=miss, 3=hit
+int player[8][8], comp[8][8];//grids
+int num_ships, comp_ships, user_ships;//number of ships, number of ships left, number of ships left
+int turns = 0;//turns played
+int w, x, y, z;//these change often, are just placeholders for loops and such
+string a, user_bombs;//input for ships, input for bombs
+bool game_end;//control the ending of the game
+
+// 0=empty, 1=boat, 2=miss, 3=hit
+//system cls resets screen
 
 void gen()//generates computer positions
 {
@@ -37,9 +42,15 @@ void ships()//creates ships
 	{
 		cout << "How many ships would you like to play with? Max of 8, minimum of 1" << endl;
 		cin >> num_ships;
+		user_ships = num_ships;
+		comp_ships = num_ships;
 		if ((num_ships <= 8) && (num_ships >= 1))//validates and exits if true
 		{
 			break;
+		}
+		else
+		{
+			exit(0);//causes to quit program is the number is not good
 		}
 	}
 }
@@ -51,19 +62,28 @@ void grid()//sets array to 0
 
 void grid_cout()
 {
+	system("CLS");
 	cout << "Player" << endl;
 	for (x = 0; x < 8; x++)
 	{
 		cout << (x + 1) << "    ";
 		for (y = 0; y < 8; y++)
 		{
-			if (player[y][x] == 0)
+			if (player[y][x] == 0)//i know im supposed to use a switch here but it gave me errors (cant use variable in array) so i used if statements
 			{
 				cout << ".    ";
 			}
 			else if (player[y][x] == 1)
 			{
 				cout << "S    ";
+			}
+			else if (player[y][x] == 2)
+			{
+				cout << "M    ";
+			}
+			else if (player[y][x] == 3)
+			{
+				cout << "H    ";
 			}
 			else
 			{
@@ -90,15 +110,15 @@ void grid_cout()
 		cout << (x + 1) << "    ";
 		for (y = 0; y < 8; y++)
 		{
-			if (comp[y][x] == 0)
-			{
-				cout << ".    ";
-			}
-			else if (comp[y][x] == 1)
+			if (comp[y][x] == 0 || comp[y][x] == 1)
 			{
 				cout << ".    ";
 			}
 			else if (comp[y][x] == 2)
+			{
+				cout << "M    ";
+			}
+			else if (comp[y][x] == 3)
 			{
 				cout << "H    ";
 			}
@@ -123,17 +143,82 @@ void user_input()
 	{
 		if (z == 0)
 		{
-			cout << "ex: A1" << endl;
+			cout << "ex: A1 (use this for all future inputs)" << endl;
 		}
 		cout << "Please enter the positions of ship " << (z + 1) << ": ";
 		cin >> a;
-		x = (int(a[1]) - 65);
-		y = (int(a[2]) - 1);
-		if (player[x][y] != 1)
+		x = (a[0]) - 65;//removes 65 from ascii value
+		y = (a[1]) - 49;//because its in a string its stored as an ascii so you must remove 49
+		if ((x < 8) && (y < 8))
 		{
-			player[x][y] = 1;//1 is with a ship in this case
+			if (player[x][y] != 1)
+			{
+				player[x][y] = 1;//1 is with a ship in this case
+			}
+			else
+			{
+				--z;
+			}
 		}
 		else
+		{
+			cout << "Sorry, that input was invalid, please try again";
+			--z;
+		}
+	}
+}
+
+void user_bomb()
+{
+	for (z = 0; z < 1; z++)
+	{
+		user_bombs = "00";
+		cout << "Please enter where you want the bomb to be placed: ";
+		cin >> user_bombs;
+		x = (user_bombs[0]) - 65;//removes 65 from ascii value
+		y = (user_bombs[1]) - 49;//because its in a string its stored as an ascii so you must remove 49
+		if (comp[x][y] == 0)
+		{
+			comp[x][y] = 2;
+			cout << "Haha you missed!" << endl;
+			//u missed
+		}
+		else if (comp[x][y] == 1)
+		{
+			comp[x][y] = 3;
+			cout << "Lucky Shot!" << endl;
+			--comp_ships;
+			//hit;
+		}
+		else if (comp[x][y] == 3 || comp[x][y] == 2)
+		{
+			cout << "You've already picked this spot." << endl;
+			--z;
+		}
+	}
+}
+
+void bombs_gen()
+{
+	srand(time(NULL));
+	for (int z = 0; z < 1; z++)//num_ships comes from somewhere else
+	{
+		y = rand() % 9;
+		x = rand() % 9;
+		if (player[x][y] == 0)
+		{
+			player[x][y] = 2;
+			cout << "Dang!" << endl;
+			//u missed
+		}
+		else if (comp[x][y] == 1)
+		{
+			player[x][y] = 3;
+			cout << "Yes!" << endl;
+			--user_ships;
+			//hit;
+		}
+		else if (comp[x][y] == 3 || comp[x][y] == 2)
 		{
 			--z;
 		}
@@ -142,17 +227,30 @@ void user_input()
 
 int main()
 {
-	grid();
-	ships();
-	gen();
-	grid_cout();//incomplete
-	user_input();
-	grid_cout();
+	grid();//creates grid
+	ships();//asks for amount of ships
+	gen();//created computer positions
+	user_input();//inputs ships
+	grid_cout();//couts it
+	while(game_end == 0)
+	{
+		cout << "You are playing with " << num_ships << " ships." << endl;
+		user_bomb();
+		grid_cout();
+		bombs_gen();
+		grid_cout();
+		//using loops find comp ships, user ships
+		if (user_ships == 0 || comp_ships == 0)//these are inserted into the other functions, 
+		//i figured this would be easier and more efficient to do than another seperate function
+		{
+			game_end = 1;
+		}
+		
+		turns++;
+	}
+
+
+	cout << "It took " << turns << " turns" << endl;
 	system("pause");
 	return 0;
 }
-
-
-
-
-// \r will reset one line
