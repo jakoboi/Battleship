@@ -143,13 +143,13 @@ void user_input()
 	{
 		if (z == 0)
 		{
-			cout << "ex: A1 (use this for all future inputs)" << endl;
+			cout << "ex: A1 (use this for all future inputs)\nThe grid is 8 x 8 and ships are 1 x 1" << endl;
 		}
 		cout << "Please enter the positions of ship " << (z + 1) << ": ";
 		cin >> a;
 		x = (a[0]) - 65;//removes 65 from ascii value
 		y = (a[1]) - 49;//because its in a string its stored as an ascii so you must remove 49
-		if ((x < 8) && (y < 8))
+		if ((x >= 0) && (x < 8) && (y >= 0) && (y < 8) && (a.size() == 2))
 		{
 			if (player[x][y] != 1)
 			{
@@ -157,12 +157,13 @@ void user_input()
 			}
 			else
 			{
+				cout << "Sorry, that input was invalid, please try again" << endl;
 				--z;
 			}
 		}
 		else
 		{
-			cout << "Sorry, that input was invalid, please try again";
+			cout << "Sorry, that input was invalid, please try again" << endl;
 			--z;
 		}
 	}
@@ -177,24 +178,38 @@ void user_bomb()
 		cin >> user_bombs;
 		x = (user_bombs[0]) - 65;//removes 65 from ascii value
 		y = (user_bombs[1]) - 49;//because its in a string its stored as an ascii so you must remove 49
-		if (comp[x][y] == 0)
+		if ((x >= 0) && (x < 8) && (y >= 0) && (y < 8) && (a.size() == 2))
 		{
-			comp[x][y] = 2;
-			cout << "Haha you missed!" << endl;
-			//u missed
+			if (comp[x][y] == 0)
+			{
+				comp[x][y] = 2;
+				cout << "Haha you missed!" << endl;
+				//u missed
+			}
+			else if (comp[x][y] == 1)
+			{
+				comp[x][y] = 3;
+				cout << "Lucky Shot!" << endl;
+				--comp_ships;
+				//hit;
+			}
+			else if (comp[x][y] == 3 || comp[x][y] == 2)
+			{
+				cout << "You've already picked this spot." << endl;
+				--z;
+			}
+			else
+			{
+				cout << "Sorry, that input was invalid, please try again" << endl;
+				--z;
+			}
 		}
-		else if (comp[x][y] == 1)
+		else
 		{
-			comp[x][y] = 3;
-			cout << "Lucky Shot!" << endl;
-			--comp_ships;
-			//hit;
-		}
-		else if (comp[x][y] == 3 || comp[x][y] == 2)
-		{
-			cout << "You've already picked this spot." << endl;
+			cout << "Sorry, that input was invalid, please try again" << endl;
 			--z;
 		}
+		
 	}
 }
 
