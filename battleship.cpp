@@ -265,6 +265,6 @@ int main()
 	} while (game_end == 0);
 	grid_cout();
 	cout << "It took " << turns << " turns" << endl;
-	cin.ignore();
+	system("pause");
 	return 0;
 }
